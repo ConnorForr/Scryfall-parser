@@ -4,6 +4,8 @@
 import requests
 import json
 import os
+from set_data import get_all_sets
+
 
 def get_bulk_json():
 
@@ -128,6 +130,17 @@ def parse_bulk_json(download_cards):
                         parse_file.write(f'{card_data["CID"]};{card_data["name"]};{card_data["commander_legality"]};{card_data["type"]};{card_data["main_tpye"]};'
                                         f'{card_data["colors"]};{card_data["color_identity"]};{card_data["mana_cost"]};{card_data["set_name"]};{card_data["rarity"]};'
                                         f'{card_data["price"]}\n')
+
+def set_selection():
+    all_sets = get_all_sets()
+    value_list = ["Numbers", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+    print("Pick the value the set starts with.")
+    print("---------------------------------------------------\n")
+    for index in range(0, 27):
+        print(f"{index+1}. {value_list[index]}")
+    try:
+        user_input = input("Which selection? (number only): ")
+
 
 def main():
     while True:
