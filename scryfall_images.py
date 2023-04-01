@@ -6,6 +6,7 @@ import json
 import os
 
 def get_bulk_json():
+
     resp = requests.get("https://api.scryfall.com/bulk-data")
 
     if resp.status_code == 200:
@@ -58,10 +59,11 @@ def parse_bulk_json(download_cards):
                 pass
 
     with open(os.path.join(os.path.join(dirname, 'json-files'), "bulk_data_file.json"), "r", encoding="utf-8") as json_file:
+
         data = json.load(json_file)
         card_list = []
         image_counter = 1
-        column_names = ["CID", "name", "legalites (commander)", "type", "main_type" 
+        column_names = ["CID", "name", "format-commander", "type", "main_type",
                         "colors","color_identity", "mana_cost", "set_name","rarity", "prices"]
 
         for card in data:
@@ -75,12 +77,12 @@ def parse_bulk_json(download_cards):
                 card_parse_data["name"] = card["name"]
                 card_parse_data["commander_legality"] = card["legalities"]["commander"]
 
-                type_card = [types.split() for types in card["type_line"].split("—")]
+                type_card = [types.strip() for types in card["type_line"].split("—")]
 
                 card_parse_data["type"] = card["type_line"]
                 card_parse_data["main_tpye"] = type_card[0]
-                card_parse_data["colors"] = card["colors"]
-                card_parse_data["color_identity"] = card["color_identity"]
+                card_parse_data["colors"] = "".join(["{" + color + "}" for color in card["colors"]])
+                card_parse_data["color_identity"] = "".join(["{" + color + "}" for color in card["color_identity"]])
                 card_parse_data["mana_cost"] = card["mana_cost"]
                 card_parse_data["set_name"] = card["set_name"]
                 card_parse_data["rarity"] = card["rarity"]
@@ -110,6 +112,10 @@ def parse_bulk_json(download_cards):
         user_file_name = input("Enter a filename (do not include \".txt\"): ")
 
         with open(f"{user_file_name}.txt", "w", encoding="utf-8") as parse_file:
+            
+            header_string = ";".join(column_names)
+            header_string = header_string[:-1]
+            parse_file.write(header_string + "\n")
 
             for index, card_data in enumerate(card_list, 1):
                     
@@ -152,5 +158,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
