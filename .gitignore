@@ -1,0 +1,3 @@
+# don't want to upload these directories
+magic-cards/
+json-files/
