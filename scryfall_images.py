@@ -48,7 +48,8 @@ def get_bulk_json():
     else:
         print("Error from server: " + str(resp.content))
 
-def parse_bulk_json(download_cards):
+
+def parse_bulk_json(download_cards, sets_to_get):
 
     dirname = os.path.dirname(__file__)
 
@@ -70,12 +71,11 @@ def parse_bulk_json(download_cards):
 
         for card in data:
 
-            # ["CMR", "MH1", "MH2", "THS", "ELD", "WAR", "GRN", "RNA", "AVR"]
-            if card["set"] in ["cmr"]:
+            if card["set"] in sets_to_get:
 
                 card_parse_data = {}
 
-                card_parse_data["CID"] = str(image_counter)
+                card_parse_data["CID"] = 0
                 card_parse_data["name"] = card["name"]
                 card_parse_data["commander_legality"] = card["legalities"]["commander"]
 
@@ -101,15 +101,21 @@ def parse_bulk_json(download_cards):
                 else:
                     card_parse_data["price"] = "0.00"
 
+                card_parse_data["download_uri"] = card["image_uris"]["normal"]
+
                 card_list.append(card_parse_data)
 
-                if download_cards:
-                    
-                    picture_var = requests.get(card["image_uris"]["normal"])
-                    with open(os.path.join(magic_dir, f"{image_counter}.jpg"), "wb") as picture:
-                        picture.write(picture_var.content)
+        card_list = sorted(card_list, key=lambda d: d['set_name'])
+        
+        for card in card_list:
+            card["CID"] = image_counter
+            if download_cards:
+                
+                picture_var = requests.get(card["download_uri"])
+                with open(os.path.join(magic_dir, f"{image_counter}.jpg"), "wb") as picture:
+                    picture.write(picture_var.content)
 
-                image_counter += 1
+            image_counter += 1
 
         user_file_name = input("Enter a filename (do not include \".txt\"): ")
 
@@ -131,16 +137,82 @@ def parse_bulk_json(download_cards):
                                         f'{card_data["colors"]};{card_data["color_identity"]};{card_data["mana_cost"]};{card_data["set_name"]};{card_data["rarity"]};'
                                         f'{card_data["price"]}\n')
 
+
 def set_selection():
     all_sets = get_all_sets()
     value_list = ["Numbers", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-    print("Pick the value the set starts with.")
-    print("---------------------------------------------------\n")
-    for index in range(0, 27):
-        print(f"{index+1}. {value_list[index]}")
-    try:
-        user_input = input("Which selection? (number only): ")
+    set_list_index = ""
+    selected_sets = []
 
+    while True:
+
+        print("Pick the value the set starts with.")
+        print("---------------------------------------------------\n")
+        for index in range(0, 27):
+            print(f"{index+1}. {value_list[index]}")
+
+        while True:
+
+            try:
+                set_list_index = int(input("\nWhich selection? (number only): "))
+                if 0 < set_list_index < 28:
+
+                    if set_list_index == 18:
+                        raise Exception("Q has no sets.") 
+                    break
+
+                raise Exception("Not a valid number.")
+            
+            except ValueError:
+                print("Not a valid input.")
+                
+            except Exception as error:
+                print(error)
+        
+        set_list_index -= 1
+        
+        print(f"\nSelect your sets from sets starting with {value_list[set_list_index]}")
+        print("-------------------------------------------------------------\n")
+
+        for index, sets in enumerate(all_sets[set_list_index], 1):
+            print(f"{index}. {sets[1]} ({sets[0]})")
+
+        set_index = ""
+        while True:
+
+            try:
+                set_index = int(input("\nWhich selection? (number only): "))
+                if 0 < set_index <= len(all_sets[set_list_index]): 
+                    break
+                raise Exception("Not a valid number.")
+
+            except ValueError:
+                print("Not a valid input.")
+
+            except Exception as error:
+                print(error)
+
+        set_index -= 1
+
+        selected_sets.append(all_sets[set_list_index][set_index][0])
+
+        want_more_sets = ""
+        while True:
+            want_more_sets = input("Do you want more sets? (y/n): ")
+            if want_more_sets in ['Y', 'y']:
+                want_more_sets = True
+                break
+
+            elif want_more_sets  in ['N', 'n']:
+                want_more_sets = False
+                break
+
+            else:
+                print("Not a valid input.")
+        
+        if not want_more_sets:
+            return selected_sets
+        
 
 def main():
     while True:
@@ -155,14 +227,15 @@ def main():
         else:
             print("Not a valid input.")
     
+    sets_to_use = set_selection()
     while True:
         want_mtg_pictures = input("Do you want to download pictures? (y/n): ")
         if want_mtg_pictures in ['Y', 'y']:
-            parse_bulk_json(True)
+            parse_bulk_json(True, sets_to_use)
             break
 
         elif want_mtg_pictures in ['N', 'n']:
-            parse_bulk_json(False)
+            parse_bulk_json(False, sets_to_use)
             break
         
         else:

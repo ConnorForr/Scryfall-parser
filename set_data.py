@@ -169,7 +169,7 @@ def get_all_sets():
         ('por', 'Portal'), ('p02', 'Portal Second Age'), ('ptk', 'Portal Three Kingdoms'),
         ('pptk', 'Portal: Three Kingdoms Promos'), ('pd2', 'Premium Deck Series: Fire and Lightning'), ('pd3', 'Premium Deck Series: Graveborn'),
         ('h09', 'Premium Deck Series: Slivers'), ('ppro', 'Pro Tour Promos'), ('pcy', 'Prophecy'),
-        ('ppcy', 'Prophecy Promos')], [('gk2', 'RNA Guild Kit'), ('tgk2', 'RNA Guild Kit Tokens'),
+        ('ppcy', 'Prophecy Promos')], [], [('gk2', 'RNA Guild Kit'), ('tgk2', 'RNA Guild Kit Tokens'),
         ('prw2', 'RNA Ravnica Weekend'), ('rna', 'Ravnica Allegiance'), ('prna', 'Ravnica Allegiance Promos'),
         ('trna', 'Ravnica Allegiance Tokens'), ('rav', 'Ravnica: City of Guilds'), ('prav', 'Ravnica: City of Guilds Promos'),
         ('prcq', 'Regional Championship Qualifiers 2022'), ('pr23', 'Regional Championship Qualifiers 2023'), ('pres', 'Resale Promos'),
