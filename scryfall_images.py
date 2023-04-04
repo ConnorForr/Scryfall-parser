@@ -71,18 +71,19 @@ def parse_bulk_json(download_cards, sets_to_get):
 
         for card in data:
 
-            if card["set"] in sets_to_get:
+            if (card["set"] in sets_to_get) and not ("//" in card["name"]):
 
                 card_parse_data = {}
 
                 card_parse_data["CID"] = 0
                 card_parse_data["name"] = card["name"]
+
                 card_parse_data["commander_legality"] = card["legalities"]["commander"]
 
                 type_card = [types.strip() for types in card["type_line"].split("—")]
 
                 card_parse_data["type"] = card["type_line"]
-                card_parse_data["main_tpye"] = type_card[0]
+                card_parse_data["main_type"] = type_card[0]
                 card_parse_data["colors"] = "".join(["{" + color + "}" for color in card["colors"]])
                 card_parse_data["color_identity"] = "".join(["{" + color + "}" for color in card["color_identity"]])
                 card_parse_data["mana_cost"] = card["mana_cost"]
@@ -128,12 +129,12 @@ def parse_bulk_json(download_cards, sets_to_get):
             for index, card_data in enumerate(card_list, 1):
                     
                     if (index == len(card_list)):
-                        parse_file.write(f'{card_data["CID"]};{card_data["name"]};{card_data["commander_legality"]};{card_data["type"]};{card_data["main_tpye"]};'
+                        parse_file.write(f'{card_data["CID"]};{card_data["name"]};{card_data["commander_legality"]};{card_data["type"]};{card_data["main_type"]};'
                                         f'{card_data["colors"]};{card_data["color_identity"]};{card_data["mana_cost"]};{card_data["set_name"]};{card_data["rarity"]};'
                                         f'{card_data["price"]}')
 
                     else:
-                        parse_file.write(f'{card_data["CID"]};{card_data["name"]};{card_data["commander_legality"]};{card_data["type"]};{card_data["main_tpye"]};'
+                        parse_file.write(f'{card_data["CID"]};{card_data["name"]};{card_data["commander_legality"]};{card_data["type"]};{card_data["main_type"]};'
                                         f'{card_data["colors"]};{card_data["color_identity"]};{card_data["mana_cost"]};{card_data["set_name"]};{card_data["rarity"]};'
                                         f'{card_data["price"]}\n')
 
